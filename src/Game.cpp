@@ -1,4 +1,5 @@
 #include "Game.hpp"
+#include "raymath.h"
 
 Game *Game::instance = nullptr;
 
@@ -12,6 +13,11 @@ void Game::init(){
   _run = true;
   _pause = false;
   _rainbow = false;
+
+  _camera = { 0 };
+  _camera.zoom = 1.0f;
+
+  _game_area = {GAME_SCREEN_OFFSET - 5, GAME_SCREEN_OFFSET - 5, 900 + 10, 650 + 10};
 
   Vector2 size;
   size.x = LINES_OF_CELLS;
@@ -48,6 +54,34 @@ void Game::update(){
       _run = !(_gen->areCellsDead());
     }
   }
+
+  if(IsMouseButtonDown(MOUSE_BUTTON_LEFT)){
+    Vector2 delta = GetMouseDelta();
+    delta = Vector2Scale(delta, -1.0f/_camera.zoom);
+
+    _camera.target = Vector2Add(_camera.target, delta);
+  }
+
+  float wheel = GetMouseWheelMove();
+  if (wheel != 0){
+    // Get the world point that is under the mouse
+    Vector2 mouseWorldPos = GetScreenToWorld2D(GetMousePosition(), _camera);
+
+    // Set the offset to where the mouse is
+    _camera.offset = GetMousePosition();
+
+    // Set the target to match, so that the camera maps the world space point
+    // under the cursor to the screen space point under the cursor at any zoom
+    _camera.target = mouseWorldPos;
+
+    // Zoom increment
+    const float zoomIncrement = 0.125f;
+
+    _camera.zoom += (wheel*zoomIncrement);
+
+    if (_camera.zoom < zoomIncrement)
+      _camera.zoom = zoomIncrement;
+  }
 }
 
 /** brief render - render the Game Singleton and the Generation in it
@@ -56,6 +90,7 @@ void Game::update(){
  */
 void Game::render(){
   BeginDrawing();
+  BeginMode2D(_camera);
 
   if(_run){
     ClearBackground(RAYWHITE);
@@ -68,6 +103,9 @@ void Game::render(){
   else
     DrawText("PRESS [ENTER] TO SIMULATE AGAIN", GAME_SCREEN_WIDTH/2 - MeasureText("PRESS [ENTER] TO SIMULATE AGAIN", 20)/2, GAME_SCREEN_HEIGHT/2 - 50, 20, GRAY);
 
+  DrawRectangleLinesEx(_game_area, 5, LIGHTGRAY);
+
+  EndMode2D();
   EndDrawing();
 }
 

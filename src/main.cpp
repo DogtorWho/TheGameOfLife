@@ -14,6 +14,7 @@ const int SCREEN_HEIGHT = 800;
   - choose the initale alive cells instead of random (but still an option for random and the percentage)
   - choose the number of turns
   - choose the size of the map
+  - can click on map and zoom / move in it with mouse
   - button to stop the simulation
   - choose alive cell color (even skin later)
   - change to 60fps always, add a limiter in the render and update function to slow down the simulation
@@ -28,7 +29,7 @@ int main(void){
 
   Game::getInstance()->init();
 
-  while (!WindowShouldClose() && Game::getInstance()->running()){
+  while (!WindowShouldClose()){
     Game::getInstance()->update();
     Game::getInstance()->render();
   }

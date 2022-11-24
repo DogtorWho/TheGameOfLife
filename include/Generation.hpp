@@ -15,7 +15,7 @@ class Generation {
     int _random;
 
   public:
-    Generation(Vector2 size) : _size(size), _turns(0), _random(15) {}
+    Generation(Vector2 size) : _size(size), _turns(0), _random(6) {}
     virtual ~Generation() { /*free the vector*/ }
 
     Vector2 getSize() const { return _size; }

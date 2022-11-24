@@ -23,14 +23,13 @@ void Menu::update(){
     _button_pause = true;
   }
   else{
-
-  }
-    Game::getInstance()->unpause();
+    Game::getInstance()->resume();
+  }    
 }
 
 void Menu::render(){
   DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), LIGHTGRAY);
-  
+
   if(_button_pause)
     _button_pause = GuiButton((Rectangle){950, 200, 120, 40}, "Resume Sim");
   else
