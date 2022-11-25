@@ -9,6 +9,7 @@ const int SCREEN_WIDTH = 1200;
 const int SCREEN_HEIGHT = 800;
 
 /* TODO :
+  - rework generation algorithm (use 2 buffers)
   - comment all functions (doxygen)
   - start with the choice menu and switch to the simulation
   - choose the initale alive cells instead of random (but still an option for random and the percentage)

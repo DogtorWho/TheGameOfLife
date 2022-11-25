@@ -10,12 +10,14 @@
 class Generation {
   private:
     std::vector<std::vector<Cell*> > _cells;
+    std::vector<std::vector<Cell*> > _buffer;
+
     Vector2 _size; // x = row, y = column
     int _turns;
     int _random;
 
   public:
-    Generation(Vector2 size) : _size(size), _turns(0), _random(6) {}
+    Generation(Vector2 size) : _size(size), _turns(0), _random(10) {}
     virtual ~Generation() { /*free the vector*/ }
 
     Vector2 getSize() const { return _size; }
@@ -27,6 +29,7 @@ class Generation {
     void update();
     void render();
 
+    void fill_buffer();
     bool areCellsDead();
     bool IsCellAlive(int row, int col);
 };

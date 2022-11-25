@@ -13,20 +13,27 @@ void Generation::init() {
   cell_size.x = SIZE_OF_CELL;
   cell_size.y = SIZE_OF_CELL;
 
-  // initialize the 2D vector
+  // initialize the 2D vectors
   for(int i = 0; i < _size.x; i++){
     std::vector<Cell*> v;
-    for(int j = 0; j < _size.y; j++)
+    std::vector<Cell*> v_buf;
+
+    for(int j = 0; j < _size.y; j++){
       v.push_back(new Cell(position, cell_size, false));
+      v_buf.push_back(new Cell(position, cell_size, false));
+    }
 
     _cells.push_back(v);
+    _buffer.push_back(v_buf);
   }
 
+  // OPTI : merge this loop with the previous one
   for (int i = 0; i < _size.x; i++){
     for (int j = 0; j < _size.y; j++){
       position.x = (j*SIZE_OF_CELL) + (SIZE_OF_CELL/2) + GAME_SCREEN_OFFSET;
       position.y = (i*SIZE_OF_CELL) + (initialDownPosition) + GAME_SCREEN_OFFSET;
       _cells[i][j]->setPosition(position);
+      _buffer[i][j]->setPosition(position);
 
       if(_random >= ((rand()%100)+1))
         _cells[i][j]->setAlive(true);
@@ -35,6 +42,8 @@ void Generation::init() {
 }
 
 void Generation::update(){
+  fill_buffer();
+
   for (int i = 0; i < _size.x; i++)
     for (int j = 0; j < _size.y; j++)
       _cells[i][j]->setAlive(IsCellAlive(i, j)); // update the cell status
@@ -73,6 +82,12 @@ void Generation::render(){
   }
 }
 
+void Generation::fill_buffer(){
+  for (int i = 0; i < _size.x; i++)
+    for (int j = 0; j < _size.y; j++)
+      _buffer[i][j]->setAlive(_cells[i][j]->isAlive());
+}
+
 bool Generation::areCellsDead() {
   for (int i = 0; i < _size.x; i++){
     for (int j = 0; j < _size.y; j++){
@@ -89,7 +104,7 @@ bool Generation::IsCellAlive(int row, int col){
 
   int cpt_livingCells = 0; // number of living cells around the [i][j] cell
 
-  for(int i=row-1; i <= row+1; i++){
+  for(int i = row-1; i <= row+1; i++){
     if(i < 0 || i >= _size.x)
       continue;
 
@@ -97,12 +112,12 @@ bool Generation::IsCellAlive(int row, int col){
       if(j < 0 || j >= _size.y)
         continue;
 
-      if(_cells[i][j]->isAlive())
+      if(_buffer[i][j]->isAlive())
         cpt_livingCells++;
     }
   }
 
-  if(_cells[row][col]->isAlive()){
+  if(_buffer[row][col]->isAlive()){
     cpt_livingCells--; // remove the current living cell
 
     if(cpt_livingCells == 2 || cpt_livingCells == 3){

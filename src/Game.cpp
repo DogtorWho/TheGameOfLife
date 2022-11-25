@@ -55,32 +55,34 @@ void Game::update(){
     }
   }
 
-  if(IsMouseButtonDown(MOUSE_BUTTON_LEFT)){
-    Vector2 delta = GetMouseDelta();
-    delta = Vector2Scale(delta, -1.0f/_camera.zoom);
+  if(CheckCollisionPointRec(GetMousePosition(), _game_area)){
+    if(IsMouseButtonDown(MOUSE_BUTTON_LEFT)){
+      Vector2 delta = GetMouseDelta();
+      delta = Vector2Scale(delta, -1.0f/_camera.zoom);
 
-    _camera.target = Vector2Add(_camera.target, delta);
-  }
+      _camera.target = Vector2Add(_camera.target, delta);
+    }
 
-  float wheel = GetMouseWheelMove();
-  if (wheel != 0){
-    // Get the world point that is under the mouse
-    Vector2 mouseWorldPos = GetScreenToWorld2D(GetMousePosition(), _camera);
+    float wheel = GetMouseWheelMove();
+    if (wheel != 0){
+      // Get the world point that is under the mouse
+      Vector2 mouseWorldPos = GetScreenToWorld2D(GetMousePosition(), _camera);
 
-    // Set the offset to where the mouse is
-    _camera.offset = GetMousePosition();
+      // Set the offset to where the mouse is
+      _camera.offset = GetMousePosition();
 
-    // Set the target to match, so that the camera maps the world space point
-    // under the cursor to the screen space point under the cursor at any zoom
-    _camera.target = mouseWorldPos;
+      // Set the target to match, so that the camera maps the world space point
+      // under the cursor to the screen space point under the cursor at any zoom
+      _camera.target = mouseWorldPos;
 
-    // Zoom increment
-    const float zoomIncrement = 0.125f;
+      // Zoom increment
+      const float zoomIncrement = 0.125f;
 
-    _camera.zoom += (wheel*zoomIncrement);
+      _camera.zoom += (wheel*zoomIncrement);
 
-    if (_camera.zoom < zoomIncrement)
-      _camera.zoom = zoomIncrement;
+      if (_camera.zoom < zoomIncrement)
+        _camera.zoom = zoomIncrement;
+    }
   }
 }
 
