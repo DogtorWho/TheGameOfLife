@@ -27,6 +27,10 @@ class Game {
     Camera2D _camera;
     Rectangle _game_area;
 
+    //GUI
+    Rectangle _button_pause;
+    Rectangle _button_stop;
+
   public:
     inline static Game* getInstance(){
       return instance = (instance != nullptr) ? instance : new Game();
@@ -44,7 +48,9 @@ class Game {
     void clean();
 
     void update();
+    void update_GUI();
     void render();
+    void render_GUI();
 
     Color getRandomColor();
 };

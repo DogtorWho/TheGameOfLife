@@ -1,6 +1,9 @@
 #include "Game.hpp"
 #include "raymath.h"
 
+#define RAYGUI_IMPLEMENTATION
+#include "extras/raygui.h"
+
 Game *Game::instance = nullptr;
 
 Generation* _gen;
@@ -18,6 +21,10 @@ void Game::init(){
   _camera.zoom = 1.0f;
 
   _game_area = {GAME_SCREEN_OFFSET - 5, GAME_SCREEN_OFFSET - 5, 900 + 10, 650 + 10};
+
+  //GUI
+  _button_pause = {250, 725, 150, 50};
+  _button_stop = {600, 725, 150, 50};
 
   Vector2 size;
   size.x = LINES_OF_CELLS;
@@ -40,21 +47,29 @@ void Game::clean(){
  * return void
  */
 void Game::update(){
+  update_GUI();
+
   if(_run){
-    if (IsKeyPressed('P'))
-      _pause = !_pause;
-
     if(!_pause){
-      if (IsKeyPressed('R'))
-        _rainbow = !_rainbow;
-
       _gen->update();
 
       // if all the cells are dead we stop the simulation
       _run = !(_gen->areCellsDead());
     }
   }
+}
 
+void Game::update_GUI(){
+  if(IsKeyPressed('P') || GuiButton(_button_pause, "Pause"))
+    _pause = !_pause;
+
+  if(GuiButton(_button_stop, "Stop"))
+    _run = !_run;
+
+  if (IsKeyPressed('R'))
+    _rainbow = !_rainbow;
+
+  // move the map with the mouse
   if(CheckCollisionPointRec(GetMousePosition(), _game_area)){
     if(IsMouseButtonDown(MOUSE_BUTTON_LEFT)){
       Vector2 delta = GetMouseDelta();
@@ -64,7 +79,7 @@ void Game::update(){
     }
 
     float wheel = GetMouseWheelMove();
-    if (wheel != 0){
+    if(wheel != 0){
       // Get the world point that is under the mouse
       Vector2 mouseWorldPos = GetScreenToWorld2D(GetMousePosition(), _camera);
 
@@ -92,6 +107,7 @@ void Game::update(){
  */
 void Game::render(){
   BeginDrawing();
+
   BeginMode2D(_camera);
 
   if(_run){
@@ -105,10 +121,18 @@ void Game::render(){
   else
     DrawText("PRESS [ENTER] TO SIMULATE AGAIN", GAME_SCREEN_WIDTH/2 - MeasureText("PRESS [ENTER] TO SIMULATE AGAIN", 20)/2, GAME_SCREEN_HEIGHT/2 - 50, 20, GRAY);
 
+  EndMode2D();
+
+  render_GUI();
+
+  EndDrawing();
+}
+
+void Game::render_GUI(){
   DrawRectangleLinesEx(_game_area, 5, LIGHTGRAY);
 
-  EndMode2D();
-  EndDrawing();
+  GuiButton(_button_pause, "Pause");
+  GuiButton(_button_stop, "Stop");
 }
 
 /** brief getRandomColor - take a random color between 11 choices
