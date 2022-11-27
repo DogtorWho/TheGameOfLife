@@ -24,8 +24,13 @@ class Game {
     bool _pause; /**< boolean representing the state of the game, true = the game is paused */
     bool _rainbow; /**< boolean representing the choice of color for the cells in the game */
 
+    RenderTexture2D _game_canvas;
     Camera2D _camera;
     Rectangle _game_area;
+    Rectangle _game_screen_source;
+    Rectangle _game_screen_dest;
+
+    Rectangle _area_hitbox;
 
     //GUI
     Rectangle _button_pause;

@@ -19,8 +19,8 @@ void Generation::init() {
     std::vector<Cell*> v_buf;
 
     for(int j = 0; j < _size.y; j++){
-      position.x = (j*SIZE_OF_CELL) + (SIZE_OF_CELL/2) + GAME_SCREEN_OFFSET;
-      position.y = (i*SIZE_OF_CELL) + (initialDownPosition) + GAME_SCREEN_OFFSET;
+      position.x = (j*SIZE_OF_CELL) + (SIZE_OF_CELL/2);
+      position.y = (i*SIZE_OF_CELL) + (initialDownPosition);
 
       if(_random >= ((rand()%100)+1))
         v.push_back(new Cell(position, cell_size, true));
