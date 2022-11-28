@@ -31,6 +31,7 @@ class Game {
     Rectangle _game_screen_dest;
 
     Rectangle _area_hitbox;
+    bool z_key;
 
     //GUI
     Rectangle _button_pause;

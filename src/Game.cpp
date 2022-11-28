@@ -19,14 +19,18 @@ void Game::init(){
 
   _game_canvas = LoadRenderTexture(GAME_SCREEN_WIDTH, GAME_SCREEN_HEIGHT);
 
-  _camera = { 0 };
-  _camera.zoom = 1.0f;
-
   _game_area = {GAME_SCREEN_OFFSET, GAME_SCREEN_OFFSET, 900, 650};
   _game_screen_source = {0, 0, GAME_SCREEN_WIDTH, GAME_SCREEN_HEIGHT};
   _game_screen_dest = {50, 50, GAME_SCREEN_WIDTH, GAME_SCREEN_HEIGHT};
 
+  _camera = { 0 };
+  _camera.target.x = _game_area.width/2;
+  _camera.target.y = _game_area.height/2;
+  _camera.offset = _camera.target;
+  _camera.zoom = 1.0f;
+
   _area_hitbox = _game_area;
+  z_key = false;
 
   //GUI
   _button_pause = {250, 725, 150, 50};
@@ -75,9 +79,63 @@ void Game::update_GUI(){
   if (IsKeyPressed('R'))
     _rainbow = !_rainbow;
 
+  /*if (IsKeyPressed('W')){
+    _camera.target.x = _game_area.width/2;
+    _camera.target.y = _game_area.height/2;
+    _camera.offset = _camera.target;
+
+    if(z_key){
+      _camera.zoom = 1.f;
+      z_key = false;
+    }
+    else{
+      _camera.zoom = 0.5f;
+      z_key = true;
+    }
+  }*/
+
   if(CheckCollisionPointRec(GetMousePosition(), _game_area)){
+    // zoom on the map
+    float wheel = GetMouseWheelMove();
+    if(wheel != 0){
+      // Get the world point that is under the mouse
+      /*Vector2 mouseWorldPos = GetScreenToWorld2D(GetMousePosition(), _camera);
+
+      // Set the offset to where the mouse is
+      _camera.offset = GetMousePosition();
+
+      // Set the target to match, so that the camera maps the world space point
+      // under the cursor to the screen space point under the cursor at any zoom
+      _camera.target = mouseWorldPos;*/
+
+      // Zoom increment
+      const float zoomIncrement = 0.125f;
+      _camera.zoom += (wheel*zoomIncrement);
+
+      float old_width = _area_hitbox.width;
+      float old_height = _area_hitbox.height;
+
+      _area_hitbox.width = _game_area.width * _camera.zoom;
+      _area_hitbox.height = _game_area.height * _camera.zoom;
+
+      if(wheel > 0){
+        _area_hitbox.x -= (_area_hitbox.width - old_width) / 2;
+        _area_hitbox.y -= (_area_hitbox.height - old_height) / 2;
+      }
+      else{
+        _area_hitbox.x += (old_width - _area_hitbox.width) / 2;
+        _area_hitbox.y += (old_height - _area_hitbox.height) / 2;
+      }
+
+      if(_camera.zoom <= 1.f){ // avoid from zooming out too much
+        _camera.zoom = 1.f;
+        _area_hitbox = _game_area;
+      }
+    }
+
+
     // move the map with the mouse
-    if(IsMouseButtonDown(MOUSE_BUTTON_LEFT)){
+    if(IsMouseButtonDown(MOUSE_BUTTON_LEFT) && _camera.zoom != 1.f){
       Vector2 old_target = _camera.target;
       Rectangle old_hitbox = _area_hitbox;
 
@@ -91,63 +149,44 @@ void Game::update_GUI(){
       _area_hitbox.x -= delta.x;
       _area_hitbox.y -= delta.y;
 
-      Vector2 up_left_corner = (Vector2) {_area_hitbox.x, _area_hitbox.y};
-      Vector2 up_right_corner = (Vector2) {_area_hitbox.x + _area_hitbox.width, _area_hitbox.y};
-      Vector2 down_left_corner = (Vector2) {_area_hitbox.x, _area_hitbox.y + _area_hitbox.height};
-      Vector2 down_right_corner = (Vector2) {_area_hitbox.x + _area_hitbox.width, _area_hitbox.y + _area_hitbox.height};
-
-      std::cout << up_left_corner.x << ":" << up_left_corner.y << " " << up_right_corner.x << ":" << up_right_corner.y << " " << down_left_corner.x << ":" << down_left_corner.y << " " << down_right_corner.x << ":" << down_right_corner.y << " " << std::endl;
-      std::cout << (_game_area.x + _game_area.width) << ":" << (_game_area.y + _game_area.height) << std::endl;
-
       bool keep_changes = true;
-      if(_camera.zoom = 1.f){
-        if(CheckCollisionPointRec(up_left_corner, _game_area)){
-          std::cout << "up_left touch" << std::endl;
-          keep_changes = false;
-        }
-        if(CheckCollisionPointRec(up_right_corner, _game_area)){
-          std::cout << "up_right touch" << std::endl;
-          keep_changes = false;
-        }
-        if(CheckCollisionPointRec(down_left_corner, _game_area)){
-          std::cout << "down_left touch" << std::endl;
-          keep_changes = false;
-        }
-        if(CheckCollisionPointRec(down_right_corner, _game_area)){
-          std::cout << "down_right touch" << std::endl;
-          keep_changes = false;
-        }
+      Vector2 hitbox_down_right = (Vector2) {_area_hitbox.x + _area_hitbox.width, _area_hitbox.y + _area_hitbox.height};
+      Vector2 game_down_right = (Vector2) {_game_area.x + _game_area.width, _game_area.y + _game_area.height};
+
+      if(_area_hitbox.x >= _game_area.x){ //left side collision
+        std::cout << "left touch" << std::endl;
+
+        _area_hitbox.x = _game_area.x;
+
+        keep_changes = false;
+      }
+      if(hitbox_down_right.x <= game_down_right.x){ //right side collision
+        std::cout << "right touch" << std::endl;
+
+        _area_hitbox.x += (game_down_right.x - hitbox_down_right.x);
+
+        keep_changes = false;
+      }
+      if(_area_hitbox.y >= _game_area.y){ //top side collision
+        std::cout << "top touch" << std::endl;
+
+        _area_hitbox.y = _game_area.y;
+
+        keep_changes = false;
+      }
+      if(hitbox_down_right.y <= game_down_right.y){ //bottom side collision
+        std::cout << "bottom touch" << std::endl;
+
+        _area_hitbox.y += (game_down_right.y - hitbox_down_right.y);
+
+        keep_changes = false;
       }
 
-      if(!keep_changes){
+      /*if(!keep_changes){
         _camera.target = old_target;
         _area_hitbox = old_hitbox;
-      }
+      }*/
     }
-
-    // zoom on the map
-    /*float wheel = GetMouseWheelMove();
-    if(wheel != 0){
-      // Get the world point that is under the mouse
-      Vector2 mouseWorldPos = GetScreenToWorld2D(GetMousePosition(), _camera);
-
-      // Set the offset to where the mouse is
-      _camera.offset = GetMousePosition();
-
-      // Set the target to match, so that the camera maps the world space point
-      // under the cursor to the screen space point under the cursor at any zoom
-      _camera.target = mouseWorldPos;
-
-      // Zoom increment
-      const float zoomIncrement = 0.125f;
-
-      _camera.zoom += (wheel*zoomIncrement);
-      if(_camera.zoom < 1.f) // avoid from zooming out too much
-        _camera.zoom = 1.f;
-
-      if(_camera.zoom < zoomIncrement)
-        _camera.zoom = zoomIncrement;
-    }*/
   }
 }
 
