@@ -17,11 +17,13 @@ void Game::init(){
   _pause = false;
   _rainbow = false;
 
-  _game_canvas = LoadRenderTexture(GAME_SCREEN_WIDTH, GAME_SCREEN_HEIGHT);
+  number_of_rows = 64;
+  number_of_cols = 96;
+  size_of_cell = 10.f;
 
-  _game_area = {GAME_SCREEN_OFFSET, GAME_SCREEN_OFFSET, 900, 650};
-  _game_screen_source = {0, 0, GAME_SCREEN_WIDTH, GAME_SCREEN_HEIGHT};
-  _game_screen_dest = {50, 50, GAME_SCREEN_WIDTH, GAME_SCREEN_HEIGHT};
+  _game_area = {GAME_SCREEN_OFFSET, GAME_SCREEN_OFFSET, GAME_SCREEN_WIDTH, GAME_SCREEN_HEIGHT};
+
+  _game_canvas = LoadRenderTexture(_game_area.width, _game_area.height);
 
   _camera = { 0 };
   _camera.target.x = _game_area.width/2;
@@ -36,11 +38,11 @@ void Game::init(){
   _button_pause = {250, 725, 150, 50};
   _button_stop = {600, 725, 150, 50};
 
-  Vector2 size;
-  size.x = LINES_OF_CELLS;
-  size.y = CELLS_PER_LINE;
+  Vector2 array_size;
+  array_size.x = number_of_rows;
+  array_size.y = number_of_cols;
 
-  _gen = new Generation(size);
+  _gen = new Generation(array_size, size_of_cell);
   _gen->init();
 }
 
@@ -79,22 +81,8 @@ void Game::update_GUI(){
   if (IsKeyPressed('R'))
     _rainbow = !_rainbow;
 
-  /*if (IsKeyPressed('W')){
-    _camera.target.x = _game_area.width/2;
-    _camera.target.y = _game_area.height/2;
-    _camera.offset = _camera.target;
 
-    if(z_key){
-      _camera.zoom = 1.f;
-      z_key = false;
-    }
-    else{
-      _camera.zoom = 0.5f;
-      z_key = true;
-    }
-  }*/
-
-  if(CheckCollisionPointRec(GetMousePosition(), _game_area)){
+  /*if(CheckCollisionPointRec(GetMousePosition(), _game_area)){
     // zoom on the map
     float wheel = GetMouseWheelMove();
     if(wheel != 0){
@@ -109,7 +97,7 @@ void Game::update_GUI(){
       _camera.target = mouseWorldPos;*/
 
       // Zoom increment
-      const float zoomIncrement = 0.125f;
+      /*const float zoomIncrement = 0.125f;
       _camera.zoom += (wheel*zoomIncrement);
 
       float old_width = _area_hitbox.width;
@@ -182,12 +170,14 @@ void Game::update_GUI(){
         keep_changes = false;
       }
 
+      std::cout << _area_hitbox.width << " " << _area_hitbox.height << std::endl;
+
       /*if(!keep_changes){
         _camera.target = old_target;
         _area_hitbox = old_hitbox;
       }*/
-    }
-  }
+    /*}
+  }*/
 }
 
 /** brief render - render the Game Singleton and the Generation in it
@@ -195,59 +185,47 @@ void Game::update_GUI(){
  * return void
  */
 void Game::render(){
-  BeginTextureMode(_game_canvas);
-
-  BeginMode2D(_camera);
-
-  ClearBackground(RAYWHITE);
-  _gen->render();
-
-  EndMode2D();
-
-  EndTextureMode();
-
-  BeginDrawing();
-
-  ClearBackground(RAYWHITE);
-
-  //BeginMode2D(_camera);
-
-  DrawTexture(_game_canvas.texture, _game_area.x, _game_area.y, RAYWHITE);
-
-  //EndMode2D();
-
-  //tmp
-  DrawRectangleLinesEx((Rectangle){_game_area.x-5, _game_area.y-5, _game_area.width+10, _game_area.height+10}, 5, LIGHTGRAY);
-
-  DrawRectangleLinesEx((Rectangle){_area_hitbox.x, _area_hitbox.y, _area_hitbox.width, _area_hitbox.height}, 5, RED);
-
-  EndDrawing();
-
-  /*BeginDrawing();
-
   if(_run){
-    ClearBackground(RAYWHITE);
-
+    BeginTextureMode(_game_canvas);
     BeginMode2D(_camera);
+    ClearBackground(RAYWHITE);
 
     _gen->render();
 
     EndMode2D();
-
-    if(_pause)
-      DrawText("SIMULATION PAUSED", (GAME_SCREEN_WIDTH/2 - MeasureText("SIMULATION PAUSED", 40)/2) + GAME_SCREEN_OFFSET, GAME_SCREEN_HEIGHT/2 - 40, 40, GRAY);
+    EndTextureMode();
   }
-  else
-    DrawText("PRESS [ENTER] TO SIMULATE AGAIN", GAME_SCREEN_WIDTH/2 - MeasureText("PRESS [ENTER] TO SIMULATE AGAIN", 20)/2, GAME_SCREEN_HEIGHT/2 - 50, 20, GRAY);
+
+  BeginDrawing();
+  ClearBackground(RAYWHITE);
+
+  DrawTexture(_game_canvas.texture, _game_area.x, _game_area.y, RAYWHITE);
+
+  if(!_run){
+    DrawText("PRESS [ENTER] TO SIMULATE AGAIN",
+              ((_game_area.width - (MeasureText("PRESS [ENTER] TO SIMULATE AGAIN", 40))) / 2) + _game_area.x,
+              (_game_area.height / 2) + 30,
+              40, GRAY);
+  }
+  else if(_pause){
+    DrawText("SIMULATION PAUSED",
+              ((_game_area.width - (MeasureText("SIMULATION PAUSED", 40))) / 2) + _game_area.x,
+              (_game_area.height / 2) + 30,
+              40, GRAY);
+  }
 
   render_GUI();
 
-  EndDrawing();*/
+  EndDrawing();
 }
 
 void Game::render_GUI(){
-  //DrawRectangleLinesEx((Rectangle){_game_area.x-500, _game_area.y-500, _game_area.width+1000, _game_area.height+1000}, 500, WHITE);
-  DrawRectangleLinesEx((Rectangle){_game_area.x-5, _game_area.y-5, _game_area.width+10, _game_area.height+10}, 5, LIGHTGRAY);
+  int border_size = 5;
+  DrawRectangleLinesEx((Rectangle){_game_area.x - border_size,
+                                    _game_area.y - border_size,
+                                    _game_area.width + (border_size * 2),
+                                    _game_area.height + (border_size * 2)},
+                                    border_size, LIGHTGRAY);
 
   GuiButton(_button_pause, "Pause");
   GuiButton(_button_stop, "Stop");

@@ -4,30 +4,27 @@
 #include <time.h>
 
 void Generation::init() {
-  int initialDownPosition = SIZE_OF_CELL/2;
+  int initialDownPosition = _cell_size/2;
 
   Vector2 position;
   position.x = 0;
   position.y = 0;
-  Vector2 cell_size;
-  cell_size.x = SIZE_OF_CELL;
-  cell_size.y = SIZE_OF_CELL;
 
   // initialize the 2D vectors
-  for(int i = 0; i < _size.x; i++){
+  for(int i = 0; i < _array_size.x; i++){
     std::vector<Cell*> v;
     std::vector<Cell*> v_buf;
 
-    for(int j = 0; j < _size.y; j++){
-      position.x = (j*SIZE_OF_CELL) + (SIZE_OF_CELL/2);
-      position.y = (i*SIZE_OF_CELL) + (initialDownPosition);
+    for(int j = 0; j < _array_size.y; j++){
+      position.x = (j*_cell_size) + (_cell_size/2);
+      position.y = (i*_cell_size) + (initialDownPosition);
 
       if(_random >= ((rand()%100)+1))
-        v.push_back(new Cell(position, cell_size, true));
+        v.push_back(new Cell(position, true));
       else
-        v.push_back(new Cell(position, cell_size, false));
+        v.push_back(new Cell(position, false));
 
-      v_buf.push_back(new Cell(position, cell_size, false));
+      v_buf.push_back(new Cell(position, false));
     }
 
     _cells.push_back(v);
@@ -38,38 +35,38 @@ void Generation::init() {
 void Generation::update(){
   fill_buffer();
 
-  for (int i = 0; i < _size.x; i++)
-    for (int j = 0; j < _size.y; j++)
+  for (int i = 0; i < _array_size.x; i++)
+    for (int j = 0; j < _array_size.y; j++)
       _cells[i][j]->setAlive(IsCellAlive(i, j)); // update the cell status
 }
 
 void Generation::render(){
-  for (int i = 0; i < _size.x; i++){
-    for (int j = 0; j < _size.y; j++){
+  for (int i = 0; i < _array_size.x; i++){
+    for (int j = 0; j < _array_size.y; j++){
       if(_cells[i][j]->isAlive()){
         if(!Game::getInstance()->getPause() && Game::getInstance()->getRainbow())
           DrawRectangle(
-            _cells[i][j]->getPosition().x - _cells[i][j]->getSize().x/2,
-            _cells[i][j]->getPosition().y - _cells[i][j]->getSize().y/2,
-            _cells[i][j]->getSize().x,
-            _cells[i][j]->getSize().y,
+            _cells[i][j]->getPosition().x - _cell_size/2,
+            _cells[i][j]->getPosition().y - _cell_size/2,
+            _cell_size,
+            _cell_size,
             Game::getInstance()->getRandomColor()
           );
         else
           DrawRectangle(
-            _cells[i][j]->getPosition().x - _cells[i][j]->getSize().x/2,
-            _cells[i][j]->getPosition().y - _cells[i][j]->getSize().y/2,
-            _cells[i][j]->getSize().x,
-            _cells[i][j]->getSize().y,
+            _cells[i][j]->getPosition().x - _cell_size/2,
+            _cells[i][j]->getPosition().y - _cell_size/2,
+            _cell_size,
+            _cell_size,
             WHITE
           );
       }
       else
         DrawRectangle(
-          _cells[i][j]->getPosition().x - _cells[i][j]->getSize().x/2,
-          _cells[i][j]->getPosition().y - _cells[i][j]->getSize().y/2,
-          _cells[i][j]->getSize().x,
-          _cells[i][j]->getSize().y,
+          _cells[i][j]->getPosition().x - _cell_size/2,
+          _cells[i][j]->getPosition().y - _cell_size/2,
+          _cell_size,
+          _cell_size,
           BLACK
         );
     }
@@ -77,14 +74,14 @@ void Generation::render(){
 }
 
 void Generation::fill_buffer(){
-  for (int i = 0; i < _size.x; i++)
-    for (int j = 0; j < _size.y; j++)
+  for (int i = 0; i < _array_size.x; i++)
+    for (int j = 0; j < _array_size.y; j++)
       _buffer[i][j]->setAlive(_cells[i][j]->isAlive());
 }
 
 bool Generation::areCellsDead() {
-  for (int i = 0; i < _size.x; i++){
-    for (int j = 0; j < _size.y; j++){
+  for (int i = 0; i < _array_size.x; i++){
+    for (int j = 0; j < _array_size.y; j++){
       if(_cells[i][j]->isAlive())
         return false;
     }
@@ -99,11 +96,11 @@ bool Generation::IsCellAlive(int row, int col){
   int cpt_livingCells = 0; // number of living cells around the [i][j] cell
 
   for(int i = row-1; i <= row+1; i++){
-    if(i < 0 || i >= _size.x)
+    if(i < 0 || i >= _array_size.x)
       continue;
 
     for(int j=col-1; j <= col+1; j++){
-      if(j < 0 || j >= _size.y)
+      if(j < 0 || j >= _array_size.y)
         continue;
 
       if(_buffer[i][j]->isAlive())

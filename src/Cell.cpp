@@ -8,11 +8,6 @@ std::string Cell::toString() const {
   res += ", ";
   res += std::to_string(getPosition().y);
   res += ")\n";
-  res += " - size(";
-  res += std::to_string(getSize().x);
-  res += ", ";
-  res += std::to_string(getSize().y);
-  res += ")\n";
   res += " - alive(";
   res += std::to_string(isAlive());
   res += ")\n";

@@ -7,12 +7,12 @@
 
 #include "Generation.hpp"
 
-#define LINES_OF_CELLS 65
+/*#define LINES_OF_CELLS 65
 #define CELLS_PER_LINE 90
-#define SIZE_OF_CELL 10
+#define SIZE_OF_CELL 10*/
 
-const int GAME_SCREEN_WIDTH = CELLS_PER_LINE*SIZE_OF_CELL;
-const int GAME_SCREEN_HEIGHT = LINES_OF_CELLS*SIZE_OF_CELL;
+const int GAME_SCREEN_WIDTH = 960;
+const int GAME_SCREEN_HEIGHT = 640;
 const int GAME_SCREEN_OFFSET = 50;
 
 class Game {
@@ -24,11 +24,13 @@ class Game {
     bool _pause; /**< boolean representing the state of the game, true = the game is paused */
     bool _rainbow; /**< boolean representing the choice of color for the cells in the game */
 
+    int number_of_rows;
+    int number_of_cols;
+    float size_of_cell;
+
     RenderTexture2D _game_canvas;
     Camera2D _camera;
     Rectangle _game_area;
-    Rectangle _game_screen_source;
-    Rectangle _game_screen_dest;
 
     Rectangle _area_hitbox;
     bool z_key;
