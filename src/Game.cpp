@@ -17,8 +17,14 @@ void Game::init(){
   _pause = false;
   _rainbow = false;
 
-  number_of_rows = 64;
-  number_of_cols = 96;
+  _speed = 0.f;
+  _speed_max = 1.f;
+  _infinite_generation = true;
+  _nb_generation = 0;
+  _nb_generation_max = 20;
+
+  number_of_rows = 60;
+  number_of_cols = number_of_rows * 1.5; // 900/600=1.5 ratio of the screen
   size_of_cell = 10.f;
 
   _game_area = {GAME_SCREEN_OFFSET, GAME_SCREEN_OFFSET, GAME_SCREEN_WIDTH, GAME_SCREEN_HEIGHT};
@@ -35,8 +41,12 @@ void Game::init(){
   z_key = false;
 
   //GUI
-  _button_pause = {250, 725, 150, 50};
-  _button_stop = {600, 725, 150, 50};
+  _button_pause = {250, 700, 150, 50};
+  _button_stop = {600, 700, 150, 50};
+
+  _slider_speed = {1035, 450, 100, 20};
+  _checkbox_inf_gen = {1000, 500, 20, 20};
+  _valuebox_nb_gen = {1115, 525, 50, 20};
 
   Vector2 array_size;
   array_size.x = number_of_rows;
@@ -63,10 +73,20 @@ void Game::update(){
 
   if(_run){
     if(!_pause){
-      _gen->update();
 
-      // if all the cells are dead we stop the simulation
-      _run = !(_gen->areCellsDead());
+      if(_speed < _speed_max){
+        _speed += 1.f;
+      }
+      else{ // update the game
+        _gen->update();
+
+        _nb_generation++;
+
+        if(!_infinite_generation && (_nb_generation >= _nb_generation_max))
+          _run = false;
+
+        _speed = 0.f;
+      }
     }
   }
 }
@@ -76,10 +96,12 @@ void Game::update_GUI(){
     _pause = !_pause;
 
   if(GuiButton(_button_stop, "Stop"))
-    _run = !_run;
+    _run = false;
 
   if (IsKeyPressed('R'))
     _rainbow = !_rainbow;
+
+
 
 
   /*if(CheckCollisionPointRec(GetMousePosition(), _game_area)){
@@ -188,6 +210,7 @@ void Game::render(){
   if(_run){
     BeginTextureMode(_game_canvas);
     BeginMode2D(_camera);
+
     ClearBackground(RAYWHITE);
 
     _gen->render();
@@ -225,10 +248,19 @@ void Game::render_GUI(){
                                     _game_area.y - border_size,
                                     _game_area.width + (border_size * 2),
                                     _game_area.height + (border_size * 2)},
-                                    border_size, LIGHTGRAY);
+                        border_size, LIGHTGRAY);
+
+  std::string text_nb_generation = "GEN : ";
+  text_nb_generation += std::to_string(_nb_generation);
+  DrawText(text_nb_generation.c_str(), _game_area.x + 5, _game_area.y - 25, 20, GRAY);
 
   GuiButton(_button_pause, "Pause");
   GuiButton(_button_stop, "Stop");
+
+  GuiSlider(_slider_speed, "Speed", std::to_string((int)_speed_max).c_str(), 1.f, 1.f, 4.f);
+  GuiCheckBox(_checkbox_inf_gen, "Infinite Generation", _infinite_generation);
+  int value = 1;
+  GuiValueBox(_valuebox_nb_gen, "Number of generation", &value, 1, 500, false);
 }
 
 /** brief getRandomColor - take a random color between 11 choices

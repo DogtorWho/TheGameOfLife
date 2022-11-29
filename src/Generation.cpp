@@ -79,7 +79,7 @@ void Generation::fill_buffer(){
       _buffer[i][j]->setAlive(_cells[i][j]->isAlive());
 }
 
-bool Generation::areCellsDead() {
+bool Generation::areCellsDead(){
   for (int i = 0; i < _array_size.x; i++){
     for (int j = 0; j < _array_size.y; j++){
       if(_cells[i][j]->isAlive())

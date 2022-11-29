@@ -14,16 +14,13 @@ class Generation {
 
     Vector2 _array_size; // x = row, y = column
     float _cell_size;
-    int _turns;
     int _random;
 
   public:
-    Generation(Vector2 array_size, float cell_size) : _array_size(array_size), _cell_size(cell_size), _turns(0), _random(10) {}
+    Generation(Vector2 array_size, float cell_size) : _array_size(array_size), _cell_size(cell_size), _random(10) {}
     virtual ~Generation() { /*free the vector*/ }
 
     Vector2 getSize() const { return _array_size; }
-    int getTurns() const { return _turns; }
-    inline void addOneTurn() { _turns++; }
 
     void init();
 

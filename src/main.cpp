@@ -25,7 +25,7 @@ int main(void){
   srand(time(NULL));
 
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "The Game Of Life");
-  SetTargetFPS(30);
+  SetTargetFPS(60);
 
 
   Game::getInstance()->init();
