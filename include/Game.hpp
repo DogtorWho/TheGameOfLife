@@ -30,6 +30,7 @@ class Game {
     bool _infinite_generation;
     long _nb_generation;
     long _nb_generation_max;
+    int _nb_random;
 
     int number_of_rows;
     int number_of_cols;
@@ -40,14 +41,16 @@ class Game {
     Rectangle _game_area;
 
     Rectangle _area_hitbox;
-    bool z_key;
 
     //GUI
+    Rectangle _button_start;
     Rectangle _button_pause;
     Rectangle _button_stop;
-    Rectangle _button_speed;
+    Vector2 _settings_origin;
+    Rectangle _dropdownbox_array_size;
     Rectangle _checkbox_inf_gen;
     Rectangle _valuebox_nb_gen;
+    Rectangle _slider_nb_random;
     Rectangle _slider_speed;
 
   public:
@@ -64,6 +67,8 @@ class Game {
     inline void quit(){ _run = false; }
 
     void init();
+    void init_GUI();
+    void init_game();
     void clean();
 
     void update();

@@ -17,42 +17,57 @@ void Game::init(){
   _pause = false;
   _rainbow = false;
 
+  // game variables
   _speed = 0.f;
   _speed_max = 1.f;
   _infinite_generation = true;
   _nb_generation = 0;
-  _nb_generation_max = 20;
+  _nb_generation_max = 10;
+  _nb_random = 10;
 
   number_of_rows = 60;
   number_of_cols = number_of_rows * 1.5; // 900/600=1.5 ratio of the screen
   size_of_cell = 10.f;
 
+  // game screen
   _game_area = {GAME_SCREEN_OFFSET, GAME_SCREEN_OFFSET, GAME_SCREEN_WIDTH, GAME_SCREEN_HEIGHT};
-
   _game_canvas = LoadRenderTexture(_game_area.width, _game_area.height);
 
+  // game camera
   _camera = { 0 };
   _camera.target.x = _game_area.width/2;
   _camera.target.y = _game_area.height/2;
   _camera.offset = _camera.target;
   _camera.zoom = 1.0f;
 
-  _area_hitbox = _game_area;
-  z_key = false;
+  _area_hitbox = _game_area; // tmp
 
-  //GUI
+  init_GUI();
+
+  init_game(); // tmp
+}
+
+void Game::init_GUI(){
+  _button_start = {_game_area.width/2 + _game_area.x - 150, _game_area.height/2 + _game_area.y - 50, 300, 100};
   _button_pause = {250, 700, 150, 50};
   _button_stop = {600, 700, 150, 50};
 
-  _slider_speed = {1035, 450, 100, 20};
-  _checkbox_inf_gen = {1000, 500, 20, 20};
-  _valuebox_nb_gen = {1115, 525, 50, 20};
+  _settings_origin = {975, 50};
+  _dropdownbox_array_size = {_settings_origin.x, _settings_origin.y + 90, 100, 20};
+  _checkbox_inf_gen = {_settings_origin.x, _settings_origin.y + 160, 20, 20};
+  _valuebox_nb_gen = {_settings_origin.x + 40, _settings_origin.y + 190, 50, 20};
+  _slider_nb_random = {_settings_origin.x, _settings_origin.y + 260, 150, 20};
+  _slider_speed = {_settings_origin.x, _settings_origin.y + 330, 80, 20};
+}
+
+void Game::init_game(){
+  //delete _gen; // to test
 
   Vector2 array_size;
   array_size.x = number_of_rows;
   array_size.y = number_of_cols;
 
-  _gen = new Generation(array_size, size_of_cell);
+  _gen = new Generation(array_size, size_of_cell, _nb_random);
   _gen->init();
 }
 
@@ -100,9 +115,6 @@ void Game::update_GUI(){
 
   if (IsKeyPressed('R'))
     _rainbow = !_rainbow;
-
-
-
 
   /*if(CheckCollisionPointRec(GetMousePosition(), _game_area)){
     // zoom on the map
@@ -254,13 +266,29 @@ void Game::render_GUI(){
   text_nb_generation += std::to_string(_nb_generation);
   DrawText(text_nb_generation.c_str(), _game_area.x + 5, _game_area.y - 25, 20, GRAY);
 
+
+  GuiButton(_button_start, "Start");
   GuiButton(_button_pause, "Pause");
   GuiButton(_button_stop, "Stop");
 
-  GuiSlider(_slider_speed, "Speed", std::to_string((int)_speed_max).c_str(), 1.f, 1.f, 4.f);
-  GuiCheckBox(_checkbox_inf_gen, "Infinite Generation", _infinite_generation);
-  int value = 1;
-  GuiValueBox(_valuebox_nb_gen, "Number of generation", &value, 1, 500, false);
+  DrawText("Settings", _settings_origin.x, _settings_origin.y, 40, GRAY);
+
+  DrawLine(_settings_origin.x, _settings_origin.y + 50, _settings_origin.x + MeasureText("Settings", 40), _settings_origin.y + 50, GRAY);
+
+  DrawText("Map Size", _settings_origin.x, _settings_origin.y + 60, 25, GRAY);
+  int v1 = 0;
+  GuiDropdownBox(_dropdownbox_array_size, "60x90", &v1, false);
+
+  DrawText("Generations", _settings_origin.x, _settings_origin.y + 130, 25, GRAY);
+  GuiCheckBox(_checkbox_inf_gen, "Infinite", _infinite_generation);
+  int v2 = 1;
+  GuiValueBox(_valuebox_nb_gen, "Number", &v2, 1, 500, false);
+
+  DrawText("Randomness", _settings_origin.x, _settings_origin.y + 230, 25, GRAY);
+  GuiSlider(_slider_nb_random, "", std::to_string((int)_nb_random).c_str(), (float)_nb_random, 0.f, 100.f);
+
+  DrawText("Speed", _settings_origin.x, _settings_origin.y + 300, 25, GRAY);
+  GuiSlider(_slider_speed, "", std::to_string((int)_speed_max).c_str(), 1.f, 1.f, 4.f);
 }
 
 /** brief getRandomColor - take a random color between 11 choices

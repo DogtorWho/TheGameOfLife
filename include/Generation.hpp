@@ -17,7 +17,7 @@ class Generation {
     int _random;
 
   public:
-    Generation(Vector2 array_size, float cell_size) : _array_size(array_size), _cell_size(cell_size), _random(10) {}
+    Generation(Vector2 array_size, float cell_size, int random) : _array_size(array_size), _cell_size(cell_size), _random(random) {}
     virtual ~Generation() { /*free the vector*/ }
 
     Vector2 getSize() const { return _array_size; }
