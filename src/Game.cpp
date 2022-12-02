@@ -116,102 +116,41 @@ void Game::update_GUI(){
   if (IsKeyPressed('R'))
     _rainbow = !_rainbow;
 
-  /*if(CheckCollisionPointRec(GetMousePosition(), _game_area)){
+  if(CheckCollisionPointRec(GetMousePosition(), _game_area)){
     // zoom on the map
     float wheel = GetMouseWheelMove();
     if(wheel != 0){
       // Get the world point that is under the mouse
-      /*Vector2 mouseWorldPos = GetScreenToWorld2D(GetMousePosition(), _camera);
+      Vector2 mouseWorldPos = GetScreenToWorld2D(GetMousePosition(), _camera);
 
       // Set the offset to where the mouse is
       _camera.offset = GetMousePosition();
 
       // Set the target to match, so that the camera maps the world space point
       // under the cursor to the screen space point under the cursor at any zoom
-      _camera.target = mouseWorldPos;*/
+      _camera.target = mouseWorldPos;
 
       // Zoom increment
-      /*const float zoomIncrement = 0.125f;
+      const float zoomIncrement = 0.125f;
       _camera.zoom += (wheel*zoomIncrement);
-
-      float old_width = _area_hitbox.width;
-      float old_height = _area_hitbox.height;
-
-      _area_hitbox.width = _game_area.width * _camera.zoom;
-      _area_hitbox.height = _game_area.height * _camera.zoom;
-
-      if(wheel > 0){
-        _area_hitbox.x -= (_area_hitbox.width - old_width) / 2;
-        _area_hitbox.y -= (_area_hitbox.height - old_height) / 2;
-      }
-      else{
-        _area_hitbox.x += (old_width - _area_hitbox.width) / 2;
-        _area_hitbox.y += (old_height - _area_hitbox.height) / 2;
-      }
 
       if(_camera.zoom <= 1.f){ // avoid from zooming out too much
         _camera.zoom = 1.f;
-        _area_hitbox = _game_area;
+        _camera.target.x = _game_area.width/2;
+        _camera.target.y = _game_area.height/2;
+        _camera.offset = _camera.target;
       }
     }
 
-
     // move the map with the mouse
     if(IsMouseButtonDown(MOUSE_BUTTON_LEFT) && _camera.zoom != 1.f){
-      Vector2 old_target = _camera.target;
-      Rectangle old_hitbox = _area_hitbox;
-
       Vector2 delta = GetMouseDelta();
       delta = Vector2Scale(delta, -1.0f/_camera.zoom);
 
-      //_camera.target = Vector2Add(_camera.target, delta);
       _camera.target.x += delta.x;
       _camera.target.y -= delta.y;
-
-      _area_hitbox.x -= delta.x;
-      _area_hitbox.y -= delta.y;
-
-      bool keep_changes = true;
-      Vector2 hitbox_down_right = (Vector2) {_area_hitbox.x + _area_hitbox.width, _area_hitbox.y + _area_hitbox.height};
-      Vector2 game_down_right = (Vector2) {_game_area.x + _game_area.width, _game_area.y + _game_area.height};
-
-      if(_area_hitbox.x >= _game_area.x){ //left side collision
-        std::cout << "left touch" << std::endl;
-
-        _area_hitbox.x = _game_area.x;
-
-        keep_changes = false;
-      }
-      if(hitbox_down_right.x <= game_down_right.x){ //right side collision
-        std::cout << "right touch" << std::endl;
-
-        _area_hitbox.x += (game_down_right.x - hitbox_down_right.x);
-
-        keep_changes = false;
-      }
-      if(_area_hitbox.y >= _game_area.y){ //top side collision
-        std::cout << "top touch" << std::endl;
-
-        _area_hitbox.y = _game_area.y;
-
-        keep_changes = false;
-      }
-      if(hitbox_down_right.y <= game_down_right.y){ //bottom side collision
-        std::cout << "bottom touch" << std::endl;
-
-        _area_hitbox.y += (game_down_right.y - hitbox_down_right.y);
-
-        keep_changes = false;
-      }
-
-      std::cout << _area_hitbox.width << " " << _area_hitbox.height << std::endl;
-
-      /*if(!keep_changes){
-        _camera.target = old_target;
-        _area_hitbox = old_hitbox;
-      }*/
-    /*}
-  }*/
+    }
+  }
 }
 
 /** brief render - render the Game Singleton and the Generation in it
@@ -223,7 +162,7 @@ void Game::render(){
     BeginTextureMode(_game_canvas);
     BeginMode2D(_camera);
 
-    ClearBackground(RAYWHITE);
+    ClearBackground(GRAY);
 
     _gen->render();
 
