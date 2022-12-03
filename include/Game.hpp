@@ -21,6 +21,7 @@ class Game {
 
     static Game* instance; /**< instance of the Game Singleton */
 
+    bool _game_starting;
     bool _run; /**< boolean representing the state of the game, true = the game loop continue */
     bool _pause; /**< boolean representing the state of the game, true = the game is paused */
     bool _rainbow; /**< boolean representing the choice of color for the cells in the game */
@@ -68,6 +69,7 @@ class Game {
 
     void init();
     void init_GUI();
+    void init_camera();
     void init_game();
     void clean();
 
