@@ -14,8 +14,6 @@ const int SCREEN_HEIGHT = 800;
   - choose the initial alive cells instead of random (but still an option for random and the percentage)
   - choose the number of turns
   - choose the size of the map
-  - can click on map and zoom / move in it with mouse
-  - button to stop the simulation
   - choose alive cell color (even skin later)
   - refactoring : add GUI singleton to contain all the variables and renders
 */
@@ -26,7 +24,6 @@ int main(void){
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "The Game Of Life");
   SetTargetFPS(60);
 
-
   Game::getInstance()->init();
 
   while (!WindowShouldClose()){
@@ -36,7 +33,7 @@ int main(void){
 
   Game::getInstance()->clean();
 
-  CloseWindow(); // Close window and OpenGL context
+  CloseWindow();
 
   return 0;
 }

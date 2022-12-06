@@ -13,7 +13,7 @@ Generation* _gen;
  * return void
  */
 void Game::init(){
-  _game_starting = false;
+  _ending_screen = false;
   _run = false;
   _pause = false;
   _rainbow = false;
@@ -113,55 +113,58 @@ void Game::update(){
 }
 
 void Game::update_GUI(){
+  if(CheckCollisionPointRec(GetMousePosition(), _game_area)){
+    // zoom on the map
+    float wheel = GetMouseWheelMove();
+    if(wheel != 0){
+      // Get the world point that is under the mouse
+      Vector2 mouseWorldPos = GetScreenToWorld2D(GetMousePosition(), _camera);
+
+      // Set the offset to where the mouse is
+      _camera.offset = GetMousePosition();
+
+      // Set the target to match, so that the camera maps the world space point
+      // under the cursor to the screen space point under the cursor at any zoom
+      _camera.target = mouseWorldPos;
+
+      // Zoom increment
+      const float zoomIncrement = 0.125f;
+      _camera.zoom += (wheel*zoomIncrement);
+
+      if(_camera.zoom <= 1.f){ // avoid from zooming out too much
+        _camera.zoom = 1.f;
+        _camera.target.x = _game_area.width/2;
+        _camera.target.y = _game_area.height/2;
+        _camera.offset = _camera.target;
+      }
+    }
+
+    // move the map with the mouse
+    if(IsMouseButtonDown(MOUSE_BUTTON_LEFT) && _camera.zoom != 1.f){
+      Vector2 delta = GetMouseDelta();
+      delta = Vector2Scale(delta, -1.0f/_camera.zoom);
+
+      _camera.target.x += delta.x;
+      _camera.target.y -= delta.y;
+    }
+  }
+
   if(_run){
     if(IsKeyPressed('P') || GuiButton(_button_pause, "Pause"))
       _pause = !_pause;
 
-    if(GuiButton(_button_stop, "Stop"))
+    if(GuiButton(_button_stop, "Stop")){
       _run = false;
+      _ending_screen = true;
+    }
 
     if (IsKeyPressed('R'))
       _rainbow = !_rainbow;
-
-    if(CheckCollisionPointRec(GetMousePosition(), _game_area)){
-      // zoom on the map
-      float wheel = GetMouseWheelMove();
-      if(wheel != 0){
-        // Get the world point that is under the mouse
-        Vector2 mouseWorldPos = GetScreenToWorld2D(GetMousePosition(), _camera);
-
-        // Set the offset to where the mouse is
-        _camera.offset = GetMousePosition();
-
-        // Set the target to match, so that the camera maps the world space point
-        // under the cursor to the screen space point under the cursor at any zoom
-        _camera.target = mouseWorldPos;
-
-        // Zoom increment
-        const float zoomIncrement = 0.125f;
-        _camera.zoom += (wheel*zoomIncrement);
-
-        if(_camera.zoom <= 1.f){ // avoid from zooming out too much
-          _camera.zoom = 1.f;
-          _camera.target.x = _game_area.width/2;
-          _camera.target.y = _game_area.height/2;
-          _camera.offset = _camera.target;
-        }
-      }
-
-      // move the map with the mouse
-      if(IsMouseButtonDown(MOUSE_BUTTON_LEFT) && _camera.zoom != 1.f){
-        Vector2 delta = GetMouseDelta();
-        delta = Vector2Scale(delta, -1.0f/_camera.zoom);
-
-        _camera.target.x += delta.x;
-        _camera.target.y -= delta.y;
-      }
-    }
   }
   else{
     if(GuiButton(_button_start, "Start")){
       init_game();
+      _ending_screen = false;
       _run = true;
     }
   }
@@ -172,7 +175,7 @@ void Game::update_GUI(){
  * return void
  */
 void Game::render(){
-  if(_run){
+  if(_run || _ending_screen){
     BeginTextureMode(_game_canvas);
     BeginMode2D(_camera);
 
@@ -181,6 +184,11 @@ void Game::render(){
     _gen->render();
 
     EndMode2D();
+    EndTextureMode();
+  }
+  else{
+    BeginTextureMode(_game_canvas);
+    ClearBackground(GRAY);
     EndTextureMode();
   }
 
