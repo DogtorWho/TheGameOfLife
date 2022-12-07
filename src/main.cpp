@@ -10,12 +10,11 @@ const int SCREEN_HEIGHT = 800;
 
 /* TODO :
   - comment all functions (doxygen)
-  - start with the choice menu and switch to the simulation
   - choose the initial alive cells instead of random (but still an option for random and the percentage)
-  - choose the number of turns
   - choose the size of the map
   - choose alive cell color (even skin later)
   - refactoring : add GUI singleton to contain all the variables and renders
+  - replace GuiSpinner for nb_generation with something else
 */
 
 int main(void){
