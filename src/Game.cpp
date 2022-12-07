@@ -54,7 +54,7 @@ void Game::init(){
 }*/
 
 void Game::init_camera(){
-  _camera = { 0 };
+  _camera = new Camera2D();
   _camera->target.x = _game_area.width/2;
   _camera->target.y = _game_area.height/2;
   _camera->offset = _camera->target;
