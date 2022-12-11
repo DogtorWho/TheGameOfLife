@@ -13,8 +13,8 @@ const int SCREEN_HEIGHT = 800;
   - choose the initial alive cells instead of random (but still an option for random and the percentage)
   - choose the size of the map
   - choose alive cell color (even skin later)
-  - refactoring : add GUI singleton to contain all the variables and renders
   - replace GuiSpinner for nb_generation with something else
+  - Gui functions only in render
 */
 
 int main(void){

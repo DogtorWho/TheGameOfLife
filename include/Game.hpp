@@ -22,36 +22,25 @@ class Game {
 
     static Game* instance; /**< instance of the Game Singleton */
 
-    bool _ending_screen;
+    bool _ending_screen; /**< boolean representing the state of the game, true = the game ended and we wait for a new game */
     bool _run; /**< boolean representing the state of the game, true = the game loop continue */
     bool _pause; /**< boolean representing the state of the game, true = the game is paused */
     bool _rainbow; /**< boolean representing the choice of color for the cells in the game */
 
-    int _speed;
-    int _speed_max;
-    bool _infinite_generation;
-    long _nb_generation;
-    int* _nb_generation_max;
-    int _nb_random;
+    int _speed; /**< integer representing the current speed iteration of the loop */
+    int _speed_max; /**< integer representing the speed of the game */
+    bool _infinite_generation; /**< boolean representing the choice of infinite generation in the game */
+    long _nb_generation;  /**< long representing the current generation number */
+    int* _nb_generation_max; /**< integer* representing the maximum generation number before ending the game */
+    int _nb_random; /**< integer representing the percentage of random alive cells at the start of the game (0-100) */
 
-    int number_of_rows;
-    int number_of_cols;
-    float size_of_cell;
+    int number_of_rows; /**< integer representing the number of rows of cells in the generation array */
+    int number_of_cols; /**< integer representing the number of columns of cells in the generation array */
+    float size_of_cell; /**< float representing the size of each cells (square) */
 
-    RenderTexture2D _game_canvas;
-    Camera2D* _camera;
-    Rectangle _game_area;
-
-    //GUI
-    /*Rectangle _button_start;
-    Rectangle _button_pause;
-    Rectangle _button_stop;
-    Vector2 _settings_origin;
-    Rectangle _dropdownbox_array_size;
-    Rectangle _checkbox_inf_gen;
-    Rectangle _spinner_nb_gen;
-    Rectangle _slider_nb_random;
-    Rectangle _slider_speed;*/
+    RenderTexture2D _game_canvas; /**< RenderTexture2D (raylib) representing the game screen */
+    Camera2D* _camera; /**< Camera2D* (raylib) representing the camera */
+    Rectangle _game_area; /**< Rectangle (raylib) representing the game area position in the window */
 
   public:
     inline static Game* getInstance(){
@@ -81,15 +70,12 @@ class Game {
     inline void setNbRandom(int nb_random) { _nb_random = nb_random; }
 
     void init();
-    //void init_GUI();
     void init_camera();
     void init_game();
     void clean();
 
     void update();
-    //void update_GUI();
     void render();
-    //void render_GUI();
 
     Color getRandomColor();
 };
