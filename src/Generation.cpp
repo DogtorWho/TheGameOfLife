@@ -52,7 +52,7 @@ void Generation::render(){
             _cells[i][j]->getPosition().y - _cell_size/2,
             _cell_size,
             _cell_size,
-            Game::getInstance()->getRandomColor()
+            Game::getInstance()->get_random_color()
           );
         else
           DrawRectangle(

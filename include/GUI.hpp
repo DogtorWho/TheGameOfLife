@@ -11,11 +11,14 @@ class GUI {
     Rectangle _button_pause;
     Rectangle _button_stop;
     Vector2 _settings_origin;
-    Rectangle _dropdownbox_array_size;
+    Rectangle _spinner_speed;
     Rectangle _checkbox_inf_gen;
     Rectangle _slider_nb_gen;
     Rectangle _slider_nb_random;
-    Rectangle _slider_speed;
+    Rectangle _dropdownbox_array_size;
+    
+    int _dropdown_index;
+    bool _show_dropdown_items;
 
   public:
     inline static GUI* getInstance(){

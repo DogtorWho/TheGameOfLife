@@ -23,9 +23,7 @@ void Game::init(){
   _nb_generation_max = 100;
   _nb_random = 10;
 
-  number_of_rows = 60;
-  number_of_cols = number_of_rows * 1.5; // 900/600=1.5 ratio of the screen
-  size_of_cell = 10.f;
+  set_array_size(0);
 
   // game screen
   _game_area = {GAME_SCREEN_OFFSET, GAME_SCREEN_OFFSET, GAME_SCREEN_WIDTH, GAME_SCREEN_HEIGHT};
@@ -47,8 +45,6 @@ void Game::init_camera(){
 void Game::init_game(){
   if(_gen != NULL)
     delete _gen;
-
-  std::cout << "cc" << std::endl;
 
   Vector2 array_size;
   array_size.x = number_of_rows;
@@ -182,13 +178,40 @@ void Game::render(){
   EndDrawing();
 }
 
+void Game::set_array_size(int array_size_index){
+  switch(array_size_index){
+    case 0 :
+      number_of_rows = 60;
+      number_of_cols = 90;
+      size_of_cell = 10.f;
+      break;
+
+    case 1 :
+      number_of_rows = 300;
+      number_of_cols = 450;
+      size_of_cell = 2.f;
+      break;
+
+    case 2 :
+      number_of_rows = 600;
+      number_of_cols = 900;
+      size_of_cell = 1.f;
+      break;
+
+    default:
+      number_of_rows = 60;
+      number_of_cols = 90;
+      size_of_cell = 10.f;
+  }
+}
+
 /** brief getRandomColor - take a random color between 11 choices
  * Possible colors : MAGENTA, YELLOW, ORANGE, PINK, RED, GREEN, LIME,
  *                    VIOLET, SKYBLUE, BLUE, PURPLE
  * param
  * return raylib::Color
  */
-Color Game::getRandomColor(){
+Color Game::get_random_color(){
   int random = rand()%9;
   switch(random){
     case 0: return MAGENTA;

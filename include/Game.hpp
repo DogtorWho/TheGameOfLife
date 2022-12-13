@@ -77,7 +77,8 @@ class Game {
     void render();
     void render_camera();
 
-    Color getRandomColor();
+    void set_array_size(int array_size_index);
+    Color get_random_color();
 };
 
 #endif

@@ -10,11 +10,8 @@ const int SCREEN_HEIGHT = 800; /**< const integer representing the size of the w
 
 /* TODO :
   - comment all functions (doxygen)
-  - choose the initial alive cells instead of random (but still an option for random and the percentage)
-  - choose the size of the map
-  - choose alive cell color (even skin later)
-  - replace GuiSpinner for nb_generation with something else
   - Gui functions only in render
+  - optimize generation updating
 */
 
 int main(void){
