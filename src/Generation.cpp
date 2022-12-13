@@ -5,6 +5,10 @@
 
 #include "Game.hpp"
 
+/**
+ * @fn void init()
+ * @brief initialize the Generation class
+ */
 void Generation::init() {
   int initialDownPosition = _cell_size/2;
 
@@ -12,7 +16,7 @@ void Generation::init() {
   position.x = 0;
   position.y = 0;
 
-  // initialize the 2D vectors
+  /* initialize the cell array and its buffer */
   for(int i = 0; i < _array_size.x; i++){
     std::vector<Cell*> v;
     std::vector<Cell*> v_buf;
@@ -34,6 +38,10 @@ void Generation::init() {
   }
 }
 
+/**
+ * @fn void update()
+ * @brief update the Generation class
+ */
 void Generation::update(){
   fill_buffer();
 
@@ -42,11 +50,15 @@ void Generation::update(){
       _cells[i][j]->setAlive(IsCellAlive(i, j)); // update the cell status
 }
 
+/**
+ * @fn void render()
+ * @brief render the Generation class
+ */
 void Generation::render(){
   for (int i = 0; i < _array_size.x; i++){
     for (int j = 0; j < _array_size.y; j++){
-      if(_cells[i][j]->isAlive()){
-        if(!Game::getInstance()->getPause() && Game::getInstance()->getRainbow())
+      if(_cells[i][j]->isAlive()){ // to reduce the lag we only render the alive cells
+        if(!Game::getInstance()->getPause() && Game::getInstance()->getRainbow()){
           DrawRectangle(
             _cells[i][j]->getPosition().x - _cell_size/2,
             _cells[i][j]->getPosition().y - _cell_size/2,
@@ -54,7 +66,8 @@ void Generation::render(){
             _cell_size,
             Game::getInstance()->get_random_color()
           );
-        else
+        }
+        else{
           DrawRectangle(
             _cells[i][j]->getPosition().x - _cell_size/2,
             _cells[i][j]->getPosition().y - _cell_size/2,
@@ -62,25 +75,29 @@ void Generation::render(){
             _cell_size,
             WHITE
           );
+        }
       }
-      else
-        DrawRectangle(
-          _cells[i][j]->getPosition().x - _cell_size/2,
-          _cells[i][j]->getPosition().y - _cell_size/2,
-          _cell_size,
-          _cell_size,
-          BLACK
-        );
     }
   }
 }
 
+/**
+ * @fn void fill_buffer()
+ * @brief fill the buffer array
+ * Copy the cells array informations into the buffer
+ */
 void Generation::fill_buffer(){
   for (int i = 0; i < _array_size.x; i++)
     for (int j = 0; j < _array_size.y; j++)
       _buffer[i][j]->setAlive(_cells[i][j]->isAlive());
 }
 
+/**
+ * @fn bool areCellsDead()
+ * @brief check if at least one cell is alive
+ * Copy the cells array informations into the buffer
+ * @return the state of the cells in the array
+ */
 bool Generation::areCellsDead(){
   for (int i = 0; i < _array_size.x; i++){
     for (int j = 0; j < _array_size.y; j++){
@@ -91,10 +108,15 @@ bool Generation::areCellsDead(){
   return true;
 }
 
+/**
+ * @fn bool IsCellAlive()
+ * @brief check if the cell should be alive
+ * Update the cell state with the rules of the Game of Life :
+ * - living cell stay alive if it has 2 or 3 living cells around it
+ * - dead cell become alive if it has exactly 3 living cells around it
+ * @return the state of the cell at the position given
+ */
 bool Generation::IsCellAlive(int row, int col){
-  // living cell stay alive (white) if it has 2 or 3 living cells around it
-  // dead cell (black) become alive if it has exactly 3 living cells around it
-
   int cpt_livingCells = 0; // number of living cells around the [i][j] cell
 
   for(int i = row-1; i <= row+1; i++){

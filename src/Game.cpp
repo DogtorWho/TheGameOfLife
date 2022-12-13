@@ -17,11 +17,11 @@ void Game::init(){
 
   // game variables
   _speed = 0;
-  _speed_max = 1;
+  _speed_max = 4;
   _infinite_generation = true;
   _nb_generation = 0;
   _nb_generation_max = 100;
-  _nb_random = 10;
+  _nb_random = 15;
 
   set_array_size(0);
 
@@ -43,6 +43,9 @@ void Game::init_camera(){
 }
 
 void Game::init_game(){
+  _speed = 0;
+  _nb_generation = 0;
+
   if(_gen != NULL)
     delete _gen;
 
@@ -62,6 +65,7 @@ void Game::init_game(){
  */
 void Game::clean(){
   delete _gen;
+  UnloadRenderTexture(_game_canvas);
 }
 
 /** brief update - update the Game Singleton and the Generation in it
@@ -142,7 +146,7 @@ void Game::render(){
     BeginTextureMode(_game_canvas);
     BeginMode2D(*_camera);
 
-    ClearBackground(GRAY);
+    ClearBackground(BLACK);
 
     _gen->render();
 
@@ -157,6 +161,8 @@ void Game::render(){
 
   BeginDrawing();
   ClearBackground(RAYWHITE);
+
+  DrawFPS(5,5);
 
   DrawTexture(_game_canvas.texture, _game_area.x, _game_area.y, RAYWHITE);
 
@@ -187,15 +193,15 @@ void Game::set_array_size(int array_size_index){
       break;
 
     case 1 :
-      number_of_rows = 300;
-      number_of_cols = 450;
-      size_of_cell = 2.f;
+      number_of_rows = 120;
+      number_of_cols = 180;
+      size_of_cell = 5.f;
       break;
 
     case 2 :
-      number_of_rows = 600;
-      number_of_cols = 900;
-      size_of_cell = 1.f;
+      number_of_rows = 300;
+      number_of_cols = 450;
+      size_of_cell = 2.f;
       break;
 
     default:

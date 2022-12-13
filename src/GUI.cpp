@@ -100,7 +100,7 @@ void GUI::render(){
 
   DrawText("Map Size", _settings_origin.x, _settings_origin.y + 300, 25, GRAY);
   int tmp_index = _dropdown_index;
-  if(GuiDropdownBox(_dropdownbox_array_size, "60x90;300x450;600x900", &_dropdown_index, _show_dropdown_items)){
+  if(GuiDropdownBox(_dropdownbox_array_size, "60x90;120x180;300x450", &_dropdown_index, _show_dropdown_items)){
     _show_dropdown_items = !_show_dropdown_items;
 
     if(tmp_index != _dropdown_index) // the screen size changed
@@ -113,7 +113,7 @@ void GUI::render(){
   if(Game::getInstance()->getInfiniteGeneration())
     GuiDisable();
 
-  Game::getInstance()->setNbGenerationMax(GuiSlider(_slider_nb_gen, "Number", std::to_string(Game::getInstance()->getNbGenerationMax()).c_str(), (float)Game::getInstance()->getNbGenerationMax(), 1.f, 500.f));
+  Game::getInstance()->setNbGenerationMax(GuiSlider(_slider_nb_gen, "Number", std::to_string(Game::getInstance()->getNbGenerationMax()).c_str(), (float)Game::getInstance()->getNbGenerationMax(), 1.f, 1000.f));
 
   GuiEnable();
 }

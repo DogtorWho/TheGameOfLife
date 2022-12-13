@@ -1,3 +1,8 @@
+/**
+ * @file main.cpp
+ * File containing the main function
+ */
+
 #include "raylib.h"
 #include <stdlib.h>
 #include <iostream>
@@ -11,7 +16,6 @@ const int SCREEN_HEIGHT = 800; /**< const integer representing the size of the w
 /* TODO :
   - comment all functions (doxygen)
   - Gui functions only in render
-  - optimize generation updating
 */
 
 int main(void){
@@ -22,6 +26,7 @@ int main(void){
 
   Game::getInstance()->init();
 
+  /* game loop */
   while (!WindowShouldClose()){
     Game::getInstance()->update();
     Game::getInstance()->render();
