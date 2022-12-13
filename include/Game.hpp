@@ -8,19 +8,17 @@
 #include "GUI.hpp"
 #include "Generation.hpp"
 
-/*#define LINES_OF_CELLS 65
-#define CELLS_PER_LINE 90
-#define SIZE_OF_CELL 10*/
-
-const int GAME_SCREEN_WIDTH = 900;
-const int GAME_SCREEN_HEIGHT = 600;
-const int GAME_SCREEN_OFFSET = 50;
+const int GAME_SCREEN_WIDTH = 900; /**< const integer representing the size of the game screen width in pixels */
+const int GAME_SCREEN_HEIGHT = 600; /**< const integer representing the size of the game screen height in pixels */
+const int GAME_SCREEN_OFFSET = 50; /**< const integer representing the offset of the game screen in pixels */
 
 class Game {
   private:
     Game(){}
 
     static Game* instance; /**< instance of the Game Singleton */
+
+    Generation* _gen;
 
     bool _ending_screen; /**< boolean representing the state of the game, true = the game ended and we wait for a new game */
     bool _run; /**< boolean representing the state of the game, true = the game loop continue */
@@ -31,7 +29,7 @@ class Game {
     int _speed_max; /**< integer representing the speed of the game */
     bool _infinite_generation; /**< boolean representing the choice of infinite generation in the game */
     long _nb_generation;  /**< long representing the current generation number */
-    int* _nb_generation_max; /**< integer* representing the maximum generation number before ending the game */
+    int _nb_generation_max; /**< integer* representing the maximum generation number before ending the game */
     int _nb_random; /**< integer representing the percentage of random alive cells at the start of the game (0-100) */
 
     int number_of_rows; /**< integer representing the number of rows of cells in the generation array */
@@ -64,8 +62,8 @@ class Game {
     inline void setInfiniteGeneration(bool infinite_generation) { _infinite_generation = infinite_generation; }
     inline long getNbGeneration() const { return _nb_generation; }
     inline void setNbGeneration(long nb_generation) { _nb_generation = nb_generation; }
-    inline int* getNbGenerationMax() const { return _nb_generation_max; }
-    inline void setNbGenerationMax(int nb_generation_max) { *_nb_generation_max = nb_generation_max; }
+    inline int getNbGenerationMax() const { return _nb_generation_max; }
+    inline void setNbGenerationMax(int nb_generation_max) { _nb_generation_max = nb_generation_max; }
     inline int getNbRandom() const { return _nb_random; }
     inline void setNbRandom(int nb_random) { _nb_random = nb_random; }
 
@@ -75,7 +73,9 @@ class Game {
     void clean();
 
     void update();
+    void update_camera();
     void render();
+    void render_camera();
 
     Color getRandomColor();
 };

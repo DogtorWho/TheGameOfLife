@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include "Game.hpp"
+
 void Generation::init() {
   int initialDownPosition = _cell_size/2;
 

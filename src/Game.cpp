@@ -3,13 +3,13 @@
 
 Game *Game::instance = nullptr;
 
-Generation* _gen;
-
 /** brief init - intialize the Game Singleton and the Generation in it
  * param
  * return void
  */
 void Game::init(){
+  _gen = NULL;
+
   _ending_screen = false;
   _run = false;
   _pause = false;
@@ -20,7 +20,7 @@ void Game::init(){
   _speed_max = 1;
   _infinite_generation = true;
   _nb_generation = 0;
-  *_nb_generation_max = 100;
+  _nb_generation_max = 100;
   _nb_random = 10;
 
   number_of_rows = 60;
@@ -45,7 +45,10 @@ void Game::init_camera(){
 }
 
 void Game::init_game(){
-  delete _gen;
+  if(_gen != NULL)
+    delete _gen;
+
+  std::cout << "cc" << std::endl;
 
   Vector2 array_size;
   array_size.x = number_of_rows;
@@ -70,6 +73,7 @@ void Game::clean(){
  * return void
  */
 void Game::update(){
+  update_camera();
   GUI::getInstance()->update();
 
   if(_run){
@@ -83,7 +87,7 @@ void Game::update(){
 
         _nb_generation++;
 
-        if(!_infinite_generation && (_nb_generation >= *_nb_generation_max)){
+        if(!_infinite_generation && (_nb_generation >= _nb_generation_max)){
           _pause = false;
           _run = false;
           _ending_screen = true;
@@ -91,6 +95,44 @@ void Game::update(){
 
         _speed = 0.f;
       }
+    }
+  }
+}
+
+void Game::update_camera(){
+  if(CheckCollisionPointRec(GetMousePosition(), _game_area)){
+    // zoom on the map
+    float wheel = GetMouseWheelMove();
+    if(wheel != 0){
+      // Get the world point that is under the mouse
+      Vector2 mouseWorldPos = GetScreenToWorld2D(GetMousePosition(), *_camera);
+
+      // Set the offset to where the mouse is
+      _camera->offset = GetMousePosition();
+
+      // Set the target to match, so that the camera maps the world space point
+      // under the cursor to the screen space point under the cursor at any zoom
+      _camera->target = mouseWorldPos;
+
+      // Zoom increment
+      const float zoomIncrement = 0.125f;
+      _camera->zoom += (wheel * zoomIncrement);
+
+      if(_camera->zoom <= 1.f){ // avoid from zooming out too much
+        _camera->zoom = 1.f;
+        _camera->target.x = _game_area.width/2;
+        _camera->target.y = _game_area.height/2;
+        _camera->offset = _camera->target;
+      }
+    }
+
+    // move the map with the mouse
+    if(IsMouseButtonDown(MOUSE_BUTTON_LEFT) && _camera->zoom != 1.f){
+      Vector2 delta = GetMouseDelta();
+      delta = Vector2Scale(delta, -1.0f / _camera->zoom);
+
+      _camera->target.x += delta.x;
+      _camera->target.y -= delta.y;
     }
   }
 }

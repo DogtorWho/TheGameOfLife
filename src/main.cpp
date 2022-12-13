@@ -5,8 +5,8 @@
 
 #include "Game.hpp"
 
-const int SCREEN_WIDTH = 1200;
-const int SCREEN_HEIGHT = 800;
+const int SCREEN_WIDTH = 1200; /**< const integer representing the size of the window screen width in pixels */
+const int SCREEN_HEIGHT = 800; /**< const integer representing the size of the window screen height in pixels */
 
 /* TODO :
   - comment all functions (doxygen)

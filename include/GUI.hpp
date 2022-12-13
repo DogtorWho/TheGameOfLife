@@ -13,7 +13,7 @@ class GUI {
     Vector2 _settings_origin;
     Rectangle _dropdownbox_array_size;
     Rectangle _checkbox_inf_gen;
-    Rectangle _spinner_nb_gen;
+    Rectangle _slider_nb_gen;
     Rectangle _slider_nb_random;
     Rectangle _slider_speed;
 

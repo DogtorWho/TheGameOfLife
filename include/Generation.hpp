@@ -4,7 +4,6 @@
 #include "raylib.h"
 #include <vector>
 
-#include "Game.hpp"
 #include "Cell.hpp"
 
 class Generation {

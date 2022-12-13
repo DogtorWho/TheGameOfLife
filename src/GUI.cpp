@@ -16,7 +16,7 @@ void GUI::init(){
   _settings_origin = {975, 50};
   _dropdownbox_array_size = {_settings_origin.x, _settings_origin.y + 90, 100, 20};
   _checkbox_inf_gen = {_settings_origin.x, _settings_origin.y + 160, 20, 20};
-  _spinner_nb_gen = {_settings_origin.x + 40, _settings_origin.y + 190, 80, 20};
+  _slider_nb_gen = {_settings_origin.x + 40, _settings_origin.y + 190, 80, 20};
   _slider_nb_random = {_settings_origin.x, _settings_origin.y + 260, 150, 20};
   _slider_speed = {_settings_origin.x, _settings_origin.y + 330, 80, 20};
 }
@@ -26,42 +26,6 @@ void GUI::clean(){
 }
 
 void GUI::update(){
-  if(CheckCollisionPointRec(GetMousePosition(), Game::getInstance()->getGameArea())){
-    // zoom on the map
-    float wheel = GetMouseWheelMove();
-    if(wheel != 0){
-      // Get the world point that is under the mouse
-      Vector2 mouseWorldPos = GetScreenToWorld2D(GetMousePosition(), *Game::getInstance()->getCamera());
-
-      // Set the offset to where the mouse is
-      Game::getInstance()->getCamera()->offset = GetMousePosition();
-
-      // Set the target to match, so that the camera maps the world space point
-      // under the cursor to the screen space point under the cursor at any zoom
-      Game::getInstance()->getCamera()->target = mouseWorldPos;
-
-      // Zoom increment
-      const float zoomIncrement = 0.125f;
-      Game::getInstance()->getCamera()->zoom += (wheel * zoomIncrement);
-
-      if(Game::getInstance()->getCamera()->zoom <= 1.f){ // avoid from zooming out too much
-        Game::getInstance()->getCamera()->zoom = 1.f;
-        Game::getInstance()->getCamera()->target.x = Game::getInstance()->getGameArea().width/2;
-        Game::getInstance()->getCamera()->target.y = Game::getInstance()->getGameArea().height/2;
-        Game::getInstance()->getCamera()->offset = Game::getInstance()->getCamera()->target;
-      }
-    }
-
-    // move the map with the mouse
-    if(IsMouseButtonDown(MOUSE_BUTTON_LEFT) && Game::getInstance()->getCamera()->zoom != 1.f){
-      Vector2 delta = GetMouseDelta();
-      delta = Vector2Scale(delta, -1.0f / Game::getInstance()->getCamera()->zoom);
-
-      Game::getInstance()->getCamera()->target.x += delta.x;
-      Game::getInstance()->getCamera()->target.y -= delta.y;
-    }
-  }
-
   if(Game::getInstance()->getRun()){
     if(IsKeyPressed('P') || GuiButton(_button_pause, "Pause"))
       Game::getInstance()->setPause(!Game::getInstance()->getPause());
@@ -123,7 +87,8 @@ void GUI::render(){
 
   if(Game::getInstance()->getInfiniteGeneration())
     GuiDisable();
-  GuiSpinner(_spinner_nb_gen, "Number", Game::getInstance()->getNbGenerationMax(), 1, 500, false);
+
+  Game::getInstance()->setNbGenerationMax(GuiSlider(_slider_nb_gen, "Number", std::to_string(Game::getInstance()->getNbGenerationMax()).c_str(), (float)Game::getInstance()->getNbGenerationMax(), 1.f, 500.f));
 
   GuiEnable();
 
