@@ -1,3 +1,8 @@
+/**
+ * @file GUI.cpp
+ * File containing the functions of the GUI singleton class
+ */
+
 #include "GUI.hpp"
 
 #define RAYGUI_IMPLEMENTATION
@@ -8,6 +13,10 @@
 
 GUI *GUI::instance = nullptr;
 
+/**
+ * @fn void init()
+ * @brief initialize the GUI class
+ */
 void GUI::init(){
   _button_start = {Game::getInstance()->getGameArea().width/2 + Game::getInstance()->getGameArea().x - 150, 675, 300, 100};
   _button_pause = {250, 700, 150, 50};
@@ -24,10 +33,18 @@ void GUI::init(){
   _show_dropdown_items = false;
 }
 
+/**
+ * @fn void clean()
+ * @brief free the GUI components
+ */
 void GUI::clean(){
   // empty
 }
 
+/**
+ * @fn void update()
+ * @brief update the GUI class
+ */
 void GUI::update(){
   if(Game::getInstance()->getRun()){
     if(IsKeyPressed('P') || GuiButton(_button_pause, "Pause"))
@@ -51,6 +68,10 @@ void GUI::update(){
   }
 }
 
+/**
+ * @fn void render()
+ * @brief render the GUI class
+ */
 void GUI::render(){
   int border_size = 5;
   DrawRectangleLinesEx((Rectangle){Game::getInstance()->getGameArea().x - border_size,

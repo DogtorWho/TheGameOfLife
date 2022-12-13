@@ -1,11 +1,16 @@
+/**
+ * @file Game.cpp
+ * File containing the functions of the Game singleton class
+ */
+
 #include "Game.hpp"
 #include "raymath.h"
 
 Game *Game::instance = nullptr;
 
-/** brief init - intialize the Game Singleton and the Generation in it
- * param
- * return void
+/**
+ * @fn void init()
+ * @brief initialize the Game class
  */
 void Game::init(){
   _gen = NULL;
@@ -34,6 +39,10 @@ void Game::init(){
   GUI::getInstance()->init();
 }
 
+/**
+ * @fn void init_camera()
+ * @brief initialize the game camera
+ */
 void Game::init_camera(){
   _camera = new Camera2D();
   _camera->target.x = _game_area.width/2;
@@ -42,6 +51,10 @@ void Game::init_camera(){
   _camera->zoom = 1.0f;
 }
 
+/**
+ * @fn void init_game()
+ * @brief initialize the core of the game
+ */
 void Game::init_game(){
   _speed = 0;
   _nb_generation = 0;
@@ -59,18 +72,18 @@ void Game::init_game(){
   init_camera();
 }
 
-/** brief clean - free the Generation in the Game Singleton
- * param
- * return void
+/**
+ * @fn void clean()
+ * @brief free the Game components
  */
 void Game::clean(){
   delete _gen;
   UnloadRenderTexture(_game_canvas);
 }
 
-/** brief update - update the Game Singleton and the Generation in it
- * param
- * return void
+/**
+ * @fn void update()
+ * @brief update the Game class
  */
 void Game::update(){
   update_camera();
@@ -99,6 +112,10 @@ void Game::update(){
   }
 }
 
+/**
+ * @fn void update_camera()
+ * @brief update the camera
+ */
 void Game::update_camera(){
   if(CheckCollisionPointRec(GetMousePosition(), _game_area)){
     // zoom on the map
@@ -137,9 +154,9 @@ void Game::update_camera(){
   }
 }
 
-/** brief render - render the Game Singleton and the Generation in it
- * param
- * return void
+/**
+ * @fn void render()
+ * @brief render the Game class
  */
 void Game::render(){
   if(_run || _ending_screen){
@@ -184,6 +201,11 @@ void Game::render(){
   EndDrawing();
 }
 
+/**
+ * @fn void set_array_size(int array_size_index)
+ * @brief set the size of the generation array and its cells
+ * @param array_size_index the index of the GUI dropdown box
+ */
 void Game::set_array_size(int array_size_index){
   switch(array_size_index){
     case 0 :
@@ -211,11 +233,12 @@ void Game::set_array_size(int array_size_index){
   }
 }
 
-/** brief getRandomColor - take a random color between 11 choices
+/**
+ * @fn Color get_random_color()
+ * @brief gives a random color between 11 choices
  * Possible colors : MAGENTA, YELLOW, ORANGE, PINK, RED, GREEN, LIME,
  *                    VIOLET, SKYBLUE, BLUE, PURPLE
- * param
- * return raylib::Color
+ * @return a random Color (raylib)
  */
 Color Game::get_random_color(){
   int random = rand()%9;

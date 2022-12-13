@@ -1,3 +1,8 @@
+/**
+ * @file Generation.cpp
+ * File containing the functions of the Generation class
+ */
+
 #include "Generation.hpp"
 
 #include <stdlib.h>

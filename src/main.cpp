@@ -14,8 +14,8 @@ const int SCREEN_WIDTH = 1200; /**< const integer representing the size of the w
 const int SCREEN_HEIGHT = 800; /**< const integer representing the size of the window screen height in pixels */
 
 /* TODO :
-  - comment all functions (doxygen)
-  - Gui functions only in render
+  - GUI functions only in render
+  - add comments inside important functions
 */
 
 int main(void){
